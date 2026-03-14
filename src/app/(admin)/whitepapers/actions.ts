@@ -8,9 +8,17 @@ import { transformToSlug } from "@/lib/utils"
 export async function createWhitepaperAction(formData: FormData) {
   const title = formData.get("title") as string
   const imageUrl = formData.get("imageUrl") as string
+  const description = formData.get("description") as string
+  const content = formData.get("content") as string
   const slug = transformToSlug(title)
 
-  await addWhitepaper({ title, slug, imageUrl: imageUrl || "/template-previews/blog.webp" })
+  await addWhitepaper({
+    title,
+    slug,
+    imageUrl: imageUrl || "/template-previews/blog.webp",
+    description: description || undefined,
+    content: content || undefined,
+  })
 
   revalidatePath("/whitepapers")
   redirect("/whitepapers")
@@ -19,9 +27,17 @@ export async function createWhitepaperAction(formData: FormData) {
 export async function updateWhitepaperAction(id: number, formData: FormData) {
   const title = formData.get("title") as string
   const imageUrl = formData.get("imageUrl") as string
+  const description = formData.get("description") as string
+  const content = formData.get("content") as string
   const slug = transformToSlug(title)
 
-  await updateWhitepaper(id, { title, slug, imageUrl: imageUrl || undefined })
+  await updateWhitepaper(id, {
+    title,
+    slug,
+    imageUrl: imageUrl || undefined,
+    description: description || undefined,
+    content: content || undefined,
+  })
 
   revalidatePath("/whitepapers")
   redirect("/whitepapers")

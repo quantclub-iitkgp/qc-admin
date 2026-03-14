@@ -14,6 +14,7 @@ export type Blog = {
   coverImage?: string
   author?: string
   tags?: string[]
+  content?: string
 }
 
 export type Whitepaper = {
@@ -21,6 +22,8 @@ export type Whitepaper = {
   title: string
   slug: string
   imageUrl: string
+  description?: string
+  content?: string
 }
 
 export type Event = {

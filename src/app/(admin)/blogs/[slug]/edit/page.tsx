@@ -19,7 +19,7 @@ export default async function EditBlogPage({ params }: { params: Promise<{ slug:
   const action = updateBlogAction.bind(null, slug)
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-3">
         <Button variant="outline" size="icon" asChild>
           <Link href="/blogs">
@@ -29,12 +29,12 @@ export default async function EditBlogPage({ params }: { params: Promise<{ slug:
         <h2 className="text-2xl font-heading">Edit Blog Post</h2>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Blog Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form action={action} className="space-y-4">
+      <form action={action} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Metadata</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Title *</Label>
               <Input id="title" name="title" defaultValue={blog.title} required />
@@ -42,7 +42,7 @@ export default async function EditBlogPage({ params }: { params: Promise<{ slug:
 
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Textarea id="description" name="description" defaultValue={blog.description} rows={3} />
+              <Textarea id="description" name="description" defaultValue={blog.description} rows={2} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -65,16 +65,38 @@ export default async function EditBlogPage({ params }: { params: Promise<{ slug:
               <Label htmlFor="tags">Tags</Label>
               <Input id="tags" name="tags" defaultValue={(blog.tags ?? []).join(", ")} />
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="flex gap-3 pt-2">
-              <Button type="submit">Save Changes</Button>
-              <Button type="button" variant="outline" asChild>
-                <Link href="/blogs">Cancel</Link>
-              </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle>Content</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="content">
+                Body{" "}
+                <span className="text-xs font-base text-foreground/50">(Markdown supported)</span>
+              </Label>
+              <Textarea
+                id="content"
+                name="content"
+                defaultValue={blog.content}
+                placeholder={`## Introduction\n\nWrite your blog post content here in Markdown...`}
+                rows={20}
+                className="font-mono text-sm"
+              />
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <div className="flex gap-3">
+          <Button type="submit">Save Changes</Button>
+          <Button type="button" variant="outline" asChild>
+            <Link href="/blogs">Cancel</Link>
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }

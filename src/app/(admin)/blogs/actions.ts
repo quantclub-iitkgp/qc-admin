@@ -12,6 +12,7 @@ export async function createBlogAction(formData: FormData) {
   const date = formData.get("date") as string
   const coverImage = formData.get("coverImage") as string
   const tagsRaw = formData.get("tags") as string
+  const content = formData.get("content") as string
 
   const slugAsParams = transformToSlug(title)
   const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : []
@@ -25,6 +26,7 @@ export async function createBlogAction(formData: FormData) {
     date: date || undefined,
     coverImage: coverImage || undefined,
     tags,
+    content: content || undefined,
   })
 
   revalidatePath("/blogs")
@@ -38,6 +40,7 @@ export async function updateBlogAction(slugAsParams: string, formData: FormData)
   const date = formData.get("date") as string
   const coverImage = formData.get("coverImage") as string
   const tagsRaw = formData.get("tags") as string
+  const content = formData.get("content") as string
   const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : []
 
   await updateBlog(slugAsParams, {
@@ -47,6 +50,7 @@ export async function updateBlogAction(slugAsParams: string, formData: FormData)
     date: date || undefined,
     coverImage: coverImage || undefined,
     tags,
+    content: content || undefined,
   })
 
   revalidatePath("/blogs")

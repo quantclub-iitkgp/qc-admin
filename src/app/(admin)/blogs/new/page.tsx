@@ -9,7 +9,7 @@ import { createBlogAction } from "../actions"
 
 export default function NewBlogPage() {
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-3">
         <Button variant="outline" size="icon" asChild>
           <Link href="/blogs">
@@ -19,12 +19,12 @@ export default function NewBlogPage() {
         <h2 className="text-2xl font-heading">New Blog Post</h2>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Blog Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form action={createBlogAction} className="space-y-4">
+      <form action={createBlogAction} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Metadata</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Title *</Label>
               <Input id="title" name="title" placeholder="e.g. Introduction to Options Pricing" required />
@@ -32,7 +32,7 @@ export default function NewBlogPage() {
 
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Textarea id="description" name="description" placeholder="Brief summary of the post" rows={3} />
+              <Textarea id="description" name="description" placeholder="Brief summary shown in listings" rows={2} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -55,16 +55,37 @@ export default function NewBlogPage() {
               <Label htmlFor="tags">Tags</Label>
               <Input id="tags" name="tags" placeholder="comma-separated: quant, trading, risk" />
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="flex gap-3 pt-2">
-              <Button type="submit">Create Blog</Button>
-              <Button type="button" variant="outline" asChild>
-                <Link href="/blogs">Cancel</Link>
-              </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle>Content</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="content">
+                Body{" "}
+                <span className="text-xs font-base text-foreground/50">(Markdown supported)</span>
+              </Label>
+              <Textarea
+                id="content"
+                name="content"
+                placeholder={`## Introduction\n\nWrite your blog post content here in Markdown...\n\n## Section 1\n\nContent here.`}
+                rows={20}
+                className="font-mono text-sm"
+              />
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <div className="flex gap-3">
+          <Button type="submit">Create Blog</Button>
+          <Button type="button" variant="outline" asChild>
+            <Link href="/blogs">Cancel</Link>
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }
