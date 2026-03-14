@@ -31,12 +31,16 @@
   --chart-4: oklch(79.76% 0.2044 153.08);
   --chart-5: oklch(66.34% 0.1806 277.2);
   --chart-active-dot: #000;
+
+  /* Scrollbar */
+  --sb-track: oklch(88% 0.02 254);
+  --sb-thumb: oklch(60% 0.05 254);
 }
 
 .dark {
-  --background: oklch(29.12% 0.0633 270.86);
-  --secondary-background: oklch(23.93% 0 0);
-  --foreground: oklch(92.49% 0 0);
+  --background: oklch(22% 0.03 265);
+  --secondary-background: oklch(28% 0.03 265);
+  --foreground: oklch(92% 0 0);
   --main-foreground: oklch(0% 0 0);
 
   --border: oklch(0% 0 0);
@@ -45,6 +49,9 @@
   --shadow: var(--box-shadow-x) var(--box-shadow-y) 0px 0px var(--border);
 
   --chart-active-dot: #fff;
+
+  --sb-track: oklch(25% 0.02 265);
+  --sb-thumb: oklch(45% 0.03 265);
 }
 
 @theme inline {
@@ -81,12 +88,32 @@
     @apply bg-background text-foreground font-base;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
+}
+
+/* ---- Scrollbars ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb) var(--sb-track);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--sb-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+  opacity: 0.4;
 }
