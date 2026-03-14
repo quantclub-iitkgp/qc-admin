@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Dr. Alexandra Chen",
+    "role": "Chief Quantitative Strategist",
+    "image": "/team/person1.jpg",
+    "bio": "Ph.D. in Financial Mathematics from MIT with 12+ years of experience in algorithmic trading systems and market microstructure analysis.",
+    "github": "https://github.com/alexchen",
+    "linkedin": "https://linkedin.com/in/alexchen",
+    "twitter": "https://twitter.com/alexchen"
+  },
+  {
+    "id": 2,
+    "name": "Michael Wei",
+    "role": "Head of Research",
+    "image": "/team/person2.jpg",
+    "bio": "Former lead researcher at Renaissance Technologies with expertise in statistical arbitrage and machine learning for financial time series forecasting.",
+    "github": "https://github.com/michaelwei",
+    "linkedin": "https://linkedin.com/in/michaelwei",
+    "twitter": "https://twitter.com/michaelwei"
+  },
+  {
+    "id": 3,
+    "name": "Sophia Rodriguez",
+    "role": "ML Engineer",
+    "image": "/team/person3.jpg",
+    "bio": "Specialized in deep reinforcement learning for trading strategies. Published author on neural network applications in market prediction.",
+    "github": "https://github.com/sophiarod",
+    "linkedin": "https://linkedin.com/in/sophiarod",
+    "twitter": null
+  },
+  {
+    "id": 4,
+    "name": "James Harrison",
+    "role": "Risk Management Specialist",
+    "image": "/team/person4.jpg",
+    "bio": "CFA charterholder with expertise in quantitative risk models and stress testing methodologies for algorithmic trading systems.",
+    "github": null,
+    "linkedin": "https://linkedin.com/in/jharrison",
+    "twitter": null
+  },
+  {
+    "id": 5,
+    "name": "Anika Patel",
+    "role": "Data Scientist",
+    "image": "/team/person5.jpg",
+    "bio": "Expert in alternative data analysis and NLP for market sentiment extraction. Previously led data science initiatives at Goldman Sachs.",
+    "github": "https://github.com/anikapatel",
+    "linkedin": "https://linkedin.com/in/anikapatel",
+    "twitter": "https://twitter.com/anikapatel"
+  },
+  {
+    "id": 6,
+    "name": "David Kim",
+    "role": "Financial Engineering Lead",
+    "image": "/team/person6.jpg",
+    "bio": "Ph.D. in Computer Science specializing in high-frequency trading algorithms and market impact modeling.",
+    "github": "https://github.com/davidkim",
+    "linkedin": "https://linkedin.com/in/davidkim",
+    "twitter": null
+  }
+]
