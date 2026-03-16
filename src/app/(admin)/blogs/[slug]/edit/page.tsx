@@ -62,8 +62,24 @@ export default async function EditBlogPage({ params }: { params: Promise<{ slug:
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="coverImage">Cover Image Path</Label>
-              <Input id="coverImage" name="coverImage" defaultValue={blog.coverImage} />
+              <Label htmlFor="coverImageFile">Cover Image</Label>
+              {blog.coverImage && (
+                <p className="text-xs text-foreground/60 break-all">
+                  Current: <code className="text-foreground">{blog.coverImage}</code>
+                </p>
+              )}
+              <Input
+                id="coverImageFile"
+                name="coverImageFile"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              />
+              <p className="text-xs text-foreground/50">
+                {blog.coverImage
+                  ? "Upload a new image to replace. Leave empty to keep current."
+                  : "JPEG, PNG, WebP or GIF · max 5 MB"}
+              </p>
+              <input type="hidden" name="existingCoverImage" value={blog.coverImage ?? ""} />
             </div>
 
             <div className="space-y-2">

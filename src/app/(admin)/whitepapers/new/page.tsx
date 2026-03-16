@@ -46,8 +46,14 @@ export default function NewWhitepaperPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="imageUrl">Cover Image URL</Label>
-              <Input id="imageUrl" name="imageUrl" placeholder="/template-previews/blog.webp" />
+              <Label htmlFor="coverImageFile">Cover Image</Label>
+              <Input
+                id="coverImageFile"
+                name="coverImageFile"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              />
+              <p className="text-xs text-foreground/50">JPEG, PNG, WebP or GIF · max 5 MB. Defaults to placeholder if empty.</p>
             </div>
           </CardContent>
         </Card>

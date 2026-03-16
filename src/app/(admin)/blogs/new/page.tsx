@@ -52,8 +52,14 @@ export default function NewBlogPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="coverImage">Cover Image Path</Label>
-              <Input id="coverImage" name="coverImage" placeholder="/images/blog-cover.webp" />
+              <Label htmlFor="coverImageFile">Cover Image</Label>
+              <Input
+                id="coverImageFile"
+                name="coverImageFile"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              />
+              <p className="text-xs text-foreground/50">JPEG, PNG, WebP or GIF · max 5 MB</p>
             </div>
 
             <div className="space-y-2">

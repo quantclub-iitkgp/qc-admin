@@ -54,8 +54,24 @@ export default async function EditWhitepaperPage({ params }: { params: Promise<{
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="imageUrl">Cover Image URL</Label>
-              <Input id="imageUrl" name="imageUrl" defaultValue={wp.imageUrl} />
+              <Label htmlFor="coverImageFile">Cover Image</Label>
+              {wp.imageUrl && (
+                <p className="text-xs text-foreground/60 break-all">
+                  Current: <code className="text-foreground">{wp.imageUrl}</code>
+                </p>
+              )}
+              <Input
+                id="coverImageFile"
+                name="coverImageFile"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              />
+              <p className="text-xs text-foreground/50">
+                {wp.imageUrl
+                  ? "Upload a new image to replace. Leave empty to keep current."
+                  : "JPEG, PNG, WebP or GIF · max 5 MB"}
+              </p>
+              <input type="hidden" name="existingImageUrl" value={wp.imageUrl ?? ""} />
             </div>
           </CardContent>
         </Card>
