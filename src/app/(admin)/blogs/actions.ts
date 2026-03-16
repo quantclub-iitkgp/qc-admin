@@ -9,6 +9,7 @@ export async function createBlogAction(formData: FormData) {
   const title = formData.get("title") as string
   const description = formData.get("description") as string
   const author = formData.get("author") as string
+  const readTime = formData.get("readTime") as string
   const date = formData.get("date") as string
   const coverImage = formData.get("coverImage") as string
   const tagsRaw = formData.get("tags") as string
@@ -23,6 +24,7 @@ export async function createBlogAction(formData: FormData) {
     title,
     description: description || undefined,
     author: author || undefined,
+    readTime: readTime || undefined,
     date: date || undefined,
     coverImage: coverImage || undefined,
     tags,
@@ -37,6 +39,7 @@ export async function updateBlogAction(slugAsParams: string, formData: FormData)
   const title = formData.get("title") as string
   const description = formData.get("description") as string
   const author = formData.get("author") as string
+  const readTime = formData.get("readTime") as string
   const date = formData.get("date") as string
   const coverImage = formData.get("coverImage") as string
   const tagsRaw = formData.get("tags") as string
@@ -47,6 +50,7 @@ export async function updateBlogAction(slugAsParams: string, formData: FormData)
     title,
     description: description || undefined,
     author: author || undefined,
+    readTime: readTime || undefined,
     date: date || undefined,
     coverImage: coverImage || undefined,
     tags,

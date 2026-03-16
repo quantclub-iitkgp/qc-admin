@@ -57,6 +57,11 @@ export default async function EditBlogPage({ params }: { params: Promise<{ slug:
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="readTime">Read Time</Label>
+              <Input id="readTime" name="readTime" placeholder="e.g. 8 min read" defaultValue={blog.readTime ?? ""} />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="coverImage">Cover Image Path</Label>
               <Input id="coverImage" name="coverImage" defaultValue={blog.coverImage} />
             </div>

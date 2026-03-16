@@ -10,6 +10,7 @@ export type Blog = {
   date?: string
   coverImage?: string
   author?: string
+  readTime?: string
   tags?: string[]
   content?: string
 }
@@ -66,6 +67,7 @@ function blogFromRow(row: any): Blog {
     date: row.date ?? undefined,
     coverImage: row.cover_image ?? undefined,
     author: row.author ?? undefined,
+    readTime: row.read_time ?? undefined,
     tags: row.tags ?? undefined,
     content: row.content ?? undefined,
   }
@@ -80,6 +82,7 @@ function blogToRow(blog: Partial<Blog>) {
     ...(blog.date !== undefined && { date: blog.date }),
     ...(blog.coverImage !== undefined && { cover_image: blog.coverImage }),
     ...(blog.author !== undefined && { author: blog.author }),
+    ...(blog.readTime !== undefined && { read_time: blog.readTime }),
     ...(blog.tags !== undefined && { tags: blog.tags }),
     ...(blog.content !== undefined && { content: blog.content }),
   }
