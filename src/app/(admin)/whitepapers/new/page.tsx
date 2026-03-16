@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createWhitepaperAction } from "../actions"
 
 export default function NewWhitepaperPage() {
+  const today = new Date().toISOString().split("T")[0]
+
   return (
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-3">
@@ -34,8 +36,38 @@ export default function NewWhitepaperPage() {
               <Textarea id="description" name="description" placeholder="Brief abstract of the paper" rows={3} />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="publishedAt">Published Date *</Label>
+              <Input
+                id="publishedAt"
+                name="publishedAt"
+                type="date"
+                defaultValue={today}
+                required
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="imageUrl">Cover Image URL</Label>
               <Input id="imageUrl" name="imageUrl" placeholder="/template-previews/blog.webp" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>PDF Upload</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="pdfFile">Whitepaper PDF</Label>
+              <Input
+                id="pdfFile"
+                name="pdfFile"
+                type="file"
+                accept=".pdf,application/pdf"
+              />
+              <p className="text-xs text-foreground/50">
+                PDF will be saved to the frontend public directory and served at <code>/pdfs/[slug].pdf</code>
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -48,7 +80,7 @@ export default function NewWhitepaperPage() {
             <div className="space-y-2">
               <Label htmlFor="content">
                 Full Paper Body{" "}
-                <span className="text-xs font-base text-foreground/50">(Markdown supported)</span>
+                <span className="text-xs font-base text-foreground/50">(Markdown — used as fallback when no PDF)</span>
               </Label>
               <Textarea
                 id="content"

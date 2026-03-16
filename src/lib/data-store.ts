@@ -24,6 +24,8 @@ export type Whitepaper = {
   imageUrl: string
   description?: string
   content?: string
+  publishedAt: string
+  pdfUrl?: string
 }
 
 export type Event = {

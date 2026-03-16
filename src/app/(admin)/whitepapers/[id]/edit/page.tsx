@@ -44,8 +44,45 @@ export default async function EditWhitepaperPage({ params }: { params: Promise<{
               <Textarea id="description" name="description" defaultValue={wp.description} rows={3} />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="publishedAt">Published Date *</Label>
+              <Input
+                id="publishedAt"
+                name="publishedAt"
+                type="date"
+                defaultValue={wp.publishedAt}
+                required
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="imageUrl">Cover Image URL</Label>
               <Input id="imageUrl" name="imageUrl" defaultValue={wp.imageUrl} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>PDF Upload</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {wp.pdfUrl && (
+              <p className="text-sm font-base text-foreground/60">
+                Current PDF: <code className="text-foreground">{wp.pdfUrl}</code>
+              </p>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="pdfFile">{wp.pdfUrl ? "Replace PDF" : "Upload PDF"}</Label>
+              <Input
+                id="pdfFile"
+                name="pdfFile"
+                type="file"
+                accept=".pdf,application/pdf"
+              />
+              <p className="text-xs text-foreground/50">
+                {wp.pdfUrl
+                  ? "Upload a new file to replace the existing PDF. Leave empty to keep current."
+                  : "PDF will be saved to the frontend public directory and served at /pdfs/[slug].pdf"}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -58,7 +95,7 @@ export default async function EditWhitepaperPage({ params }: { params: Promise<{
             <div className="space-y-2">
               <Label htmlFor="content">
                 Full Paper Body{" "}
-                <span className="text-xs font-base text-foreground/50">(Markdown supported)</span>
+                <span className="text-xs font-base text-foreground/50">(Markdown — used as fallback when no PDF)</span>
               </Label>
               <Textarea
                 id="content"
