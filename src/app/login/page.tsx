@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 export default function LoginPage() {
   const router = useRouter()
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -22,11 +23,12 @@ export default function LoginPage() {
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       })
 
       if (!res.ok) {
-        toast.error("Invalid password. Try again.")
+        const data = await res.json()
+        toast.error(data.error ?? "Invalid credentials. Try again.")
         return
       }
 
@@ -48,20 +50,31 @@ export default function LoginPage() {
             <Lock className="h-6 w-6 text-main-foreground" />
           </div>
           <CardTitle className="text-2xl">Quant Club Admin</CardTitle>
-          <CardDescription>Enter your password to access the admin panel</CardDescription>
+          <CardDescription>Sign in to access the admin panel</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="admin@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter admin password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                autoFocus
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>

@@ -1,20 +1,26 @@
 "use server"
 
-import { promises as fs } from "fs"
-import path from "path"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { addWhitepaper, updateWhitepaper, deleteWhitepaper } from "@/lib/data-store"
+import { serviceClient } from "@/lib/supabase/service"
 import { transformToSlug } from "@/lib/utils"
 
-async function savePDF(pdfFile: File, slug: string): Promise<string> {
+async function uploadPDF(pdfFile: File, slug: string): Promise<string> {
   const bytes = await pdfFile.arrayBuffer()
   const buffer = Buffer.from(bytes)
-  const filename = `${slug}.pdf`
-  const pdfDir = path.join(process.cwd(), "..", "qc-frontend", "public", "pdfs")
-  await fs.mkdir(pdfDir, { recursive: true })
-  await fs.writeFile(path.join(pdfDir, filename), buffer)
-  return `/pdfs/${filename}`
+
+  const { error } = await serviceClient.storage
+    .from("whitepapers")
+    .upload(`${slug}.pdf`, buffer, { contentType: "application/pdf", upsert: true })
+
+  if (error) throw new Error(error.message)
+
+  const {
+    data: { publicUrl },
+  } = serviceClient.storage.from("whitepapers").getPublicUrl(`${slug}.pdf`)
+
+  return publicUrl
 }
 
 export async function createWhitepaperAction(formData: FormData) {
@@ -28,7 +34,7 @@ export async function createWhitepaperAction(formData: FormData) {
 
   let pdfUrl: string | undefined
   if (pdfFile && pdfFile.size > 0) {
-    pdfUrl = await savePDF(pdfFile, slug)
+    pdfUrl = await uploadPDF(pdfFile, slug)
   }
 
   await addWhitepaper({
@@ -56,7 +62,7 @@ export async function updateWhitepaperAction(id: number, formData: FormData) {
 
   let pdfUrl: string | undefined
   if (pdfFile && pdfFile.size > 0) {
-    pdfUrl = await savePDF(pdfFile, slug)
+    pdfUrl = await uploadPDF(pdfFile, slug)
   }
 
   await updateWhitepaper(id, {

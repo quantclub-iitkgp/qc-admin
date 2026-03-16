@@ -1,24 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getSession } from "@/lib/session"
+import { createClient } from "@/lib/supabase/server"
 
 export async function POST(request: NextRequest) {
-  const { password } = await request.json()
-  const adminPassword = process.env.ADMIN_PASSWORD
+  const { email, password } = await request.json()
+  const supabase = await createClient()
 
-  if (!adminPassword || password !== adminPassword) {
-    return NextResponse.json({ error: "Invalid password" }, { status: 401 })
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 401 })
   }
-
-  const session = await getSession()
-  session.isLoggedIn = true
-  await session.save()
 
   return NextResponse.json({ success: true })
 }
 
 export async function DELETE() {
-  const session = await getSession()
-  session.destroy()
-
+  const supabase = await createClient()
+  await supabase.auth.signOut()
   return NextResponse.json({ success: true })
 }
