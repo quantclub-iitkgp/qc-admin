@@ -3,14 +3,14 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { addWhitepaper, updateWhitepaper, deleteWhitepaper } from "@/lib/data-store"
-import { serviceClient } from "@/lib/supabase/service"
+import { getServiceClient } from "@/lib/supabase/service"
 import { transformToSlug } from "@/lib/utils"
 
 async function uploadPDF(pdfFile: File, slug: string): Promise<string> {
   const bytes = await pdfFile.arrayBuffer()
   const buffer = Buffer.from(bytes)
 
-  const { error } = await serviceClient.storage
+  const { error } = await getServiceClient().storage
     .from("whitepapers")
     .upload(`${slug}.pdf`, buffer, { contentType: "application/pdf", upsert: true })
 
@@ -18,7 +18,7 @@ async function uploadPDF(pdfFile: File, slug: string): Promise<string> {
 
   const {
     data: { publicUrl },
-  } = serviceClient.storage.from("whitepapers").getPublicUrl(`${slug}.pdf`)
+  } = getServiceClient().storage.from("whitepapers").getPublicUrl(`${slug}.pdf`)
 
   return publicUrl
 }

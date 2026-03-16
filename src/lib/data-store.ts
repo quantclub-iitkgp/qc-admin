@@ -1,4 +1,4 @@
-import { serviceClient } from "@/lib/supabase/service"
+import { getServiceClient } from "@/lib/supabase/service"
 
 // ---- Types ----
 
@@ -152,7 +152,7 @@ function contactFromRow(row: any): Contact {
 // ---- Blogs ----
 
 export async function getBlogs(): Promise<Blog[]> {
-  const { data, error } = await serviceClient
+  const { data, error } = await getServiceClient()
     .from("blogs")
     .select("*")
     .order("created_at", { ascending: false })
@@ -161,12 +161,12 @@ export async function getBlogs(): Promise<Blog[]> {
 }
 
 export async function addBlog(blog: Blog): Promise<void> {
-  const { error } = await serviceClient.from("blogs").insert(blogToRow(blog))
+  const { error } = await getServiceClient().from("blogs").insert(blogToRow(blog))
   if (error) throw new Error(error.message)
 }
 
 export async function updateBlog(slugAsParams: string, updates: Partial<Blog>): Promise<void> {
-  const { error } = await serviceClient
+  const { error } = await getServiceClient()
     .from("blogs")
     .update(blogToRow(updates))
     .eq("slug_as_params", slugAsParams)
@@ -174,7 +174,7 @@ export async function updateBlog(slugAsParams: string, updates: Partial<Blog>): 
 }
 
 export async function deleteBlog(slugAsParams: string): Promise<void> {
-  const { error } = await serviceClient
+  const { error } = await getServiceClient()
     .from("blogs")
     .delete()
     .eq("slug_as_params", slugAsParams)
@@ -184,7 +184,7 @@ export async function deleteBlog(slugAsParams: string): Promise<void> {
 // ---- Whitepapers ----
 
 export async function getWhitepapers(): Promise<Whitepaper[]> {
-  const { data, error } = await serviceClient
+  const { data, error } = await getServiceClient()
     .from("whitepapers")
     .select("*")
     .order("created_at", { ascending: false })
@@ -193,12 +193,12 @@ export async function getWhitepapers(): Promise<Whitepaper[]> {
 }
 
 export async function addWhitepaper(wp: Omit<Whitepaper, "id">): Promise<void> {
-  const { error } = await serviceClient.from("whitepapers").insert(whitepaperToRow(wp))
+  const { error } = await getServiceClient().from("whitepapers").insert(whitepaperToRow(wp))
   if (error) throw new Error(error.message)
 }
 
 export async function updateWhitepaper(id: number, updates: Partial<Whitepaper>): Promise<void> {
-  const { error } = await serviceClient
+  const { error } = await getServiceClient()
     .from("whitepapers")
     .update(whitepaperToRow(updates))
     .eq("id", id)
@@ -206,14 +206,14 @@ export async function updateWhitepaper(id: number, updates: Partial<Whitepaper>)
 }
 
 export async function deleteWhitepaper(id: number): Promise<void> {
-  const { error } = await serviceClient.from("whitepapers").delete().eq("id", id)
+  const { error } = await getServiceClient().from("whitepapers").delete().eq("id", id)
   if (error) throw new Error(error.message)
 }
 
 // ---- Events ----
 
 export async function getEvents(): Promise<Event[]> {
-  const { data, error } = await serviceClient
+  const { data, error } = await getServiceClient()
     .from("events")
     .select("*")
     .order("created_at", { ascending: false })
@@ -222,24 +222,24 @@ export async function getEvents(): Promise<Event[]> {
 }
 
 export async function addEvent(event: Omit<Event, "id">): Promise<void> {
-  const { error } = await serviceClient.from("events").insert(event)
+  const { error } = await getServiceClient().from("events").insert(event)
   if (error) throw new Error(error.message)
 }
 
 export async function updateEvent(id: number, updates: Partial<Event>): Promise<void> {
-  const { error } = await serviceClient.from("events").update(updates).eq("id", id)
+  const { error } = await getServiceClient().from("events").update(updates).eq("id", id)
   if (error) throw new Error(error.message)
 }
 
 export async function deleteEvent(id: number): Promise<void> {
-  const { error } = await serviceClient.from("events").delete().eq("id", id)
+  const { error } = await getServiceClient().from("events").delete().eq("id", id)
   if (error) throw new Error(error.message)
 }
 
 // ---- Team ----
 
 export async function getTeam(): Promise<TeamMember[]> {
-  const { data, error } = await serviceClient
+  const { data, error } = await getServiceClient()
     .from("team")
     .select("*")
     .order("created_at", { ascending: false })
@@ -248,24 +248,24 @@ export async function getTeam(): Promise<TeamMember[]> {
 }
 
 export async function addTeamMember(member: Omit<TeamMember, "id">): Promise<void> {
-  const { error } = await serviceClient.from("team").insert(member)
+  const { error } = await getServiceClient().from("team").insert(member)
   if (error) throw new Error(error.message)
 }
 
 export async function updateTeamMember(id: number, updates: Partial<TeamMember>): Promise<void> {
-  const { error } = await serviceClient.from("team").update(updates).eq("id", id)
+  const { error } = await getServiceClient().from("team").update(updates).eq("id", id)
   if (error) throw new Error(error.message)
 }
 
 export async function deleteTeamMember(id: number): Promise<void> {
-  const { error } = await serviceClient.from("team").delete().eq("id", id)
+  const { error } = await getServiceClient().from("team").delete().eq("id", id)
   if (error) throw new Error(error.message)
 }
 
 // ---- Contacts ----
 
 export async function getContacts(): Promise<Contact[]> {
-  const { data, error } = await serviceClient
+  const { data, error } = await getServiceClient()
     .from("contacts")
     .select("*")
     .order("received_at", { ascending: false })
@@ -276,6 +276,6 @@ export async function getContacts(): Promise<Contact[]> {
 export async function addContact(
   contact: Omit<Contact, "id" | "receivedAt">
 ): Promise<void> {
-  const { error } = await serviceClient.from("contacts").insert(contact)
+  const { error } = await getServiceClient().from("contacts").insert(contact)
   if (error) throw new Error(error.message)
 }
