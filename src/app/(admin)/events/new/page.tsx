@@ -24,7 +24,7 @@ export default function NewEventPage() {
           <CardTitle>Event Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <form action={createEventAction} className="space-y-4">
+          <form action={createEventAction} encType="multipart/form-data" className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Title *</Label>
               <Input id="title" name="title" placeholder="e.g. Quant Trading Workshop" required />
@@ -44,8 +44,8 @@ export default function NewEventPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input id="image" name="image" placeholder="https://..." />
+              <Label htmlFor="imageFile">Cover Image</Label>
+              <Input id="imageFile" name="imageFile" type="file" accept="image/*" />
             </div>
             <div className="flex gap-3 pt-2">
               <Button type="submit">Create Event</Button>

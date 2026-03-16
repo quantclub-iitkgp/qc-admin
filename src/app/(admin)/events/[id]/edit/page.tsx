@@ -34,7 +34,8 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
           <CardTitle>Event Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <form action={action} className="space-y-4">
+          <form action={action} encType="multipart/form-data" className="space-y-4">
+            <input type="hidden" name="existingImage" value={event.image} />
             <div className="space-y-2">
               <Label htmlFor="title">Title *</Label>
               <Input id="title" name="title" defaultValue={event.title} required />
@@ -54,8 +55,15 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input id="image" name="image" defaultValue={event.image} />
+              <Label htmlFor="imageFile">Cover Image</Label>
+              {event.image && (
+                <div className="mb-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={event.image} alt="Current cover" className="h-24 w-auto rounded border object-cover" />
+                  <p className="text-xs text-muted-foreground mt-1">Current image — upload a new file to replace it</p>
+                </div>
+              )}
+              <Input id="imageFile" name="imageFile" type="file" accept="image/*" />
             </div>
             <div className="flex gap-3 pt-2">
               <Button type="submit">Save Changes</Button>
