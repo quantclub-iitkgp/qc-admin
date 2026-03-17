@@ -2,7 +2,16 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BarChart3, BookOpen, CalendarDays, FileText, Mail, Users, X } from "lucide-react"
+import {
+  BarChart3,
+  BookOpen,
+  CalendarDays,
+  FileText,
+  Mail,
+  Shield,
+  Users,
+  X,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navLinks = [
@@ -17,17 +26,16 @@ const navLinks = [
 interface SidebarProps {
   isOpen?: boolean
   onClose?: () => void
+  isSuperAdmin?: boolean
 }
 
-export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
+export function Sidebar({ isOpen = false, onClose, isSuperAdmin = false }: SidebarProps) {
   const pathname = usePathname()
 
   return (
     <aside
       className={cn(
         "fixed inset-y-0 left-0 z-40 w-64 border-r-4 border-border bg-secondary-background flex flex-col transition-transform duration-200 ease-in-out",
-        // Mobile: translate off-screen when closed, on-screen when open
-        // Desktop: always visible
         isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}
     >
@@ -79,6 +87,35 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             </Link>
           )
         })}
+
+        {/* Super Admin section — only shown to super admin */}
+        {isSuperAdmin && (
+          <>
+            <div className="pt-4 pb-1">
+              <p className="px-3 pb-2 text-xs font-heading uppercase tracking-widest text-foreground/40">
+                Super Admin
+              </p>
+            </div>
+            <Link
+              href="/super-admin"
+              onClick={onClose}
+              className={cn(
+                "group flex items-center gap-3 px-3 py-2.5 rounded-base text-sm font-base transition-all border-2",
+                pathname.startsWith("/super-admin")
+                  ? "bg-main text-main-foreground border-border shadow-shadow translate-x-[2px] translate-y-[2px]"
+                  : "border-transparent text-foreground/70 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 hover:border-border"
+              )}
+            >
+              <Shield
+                className={cn(
+                  "h-4 w-4 shrink-0 transition-transform",
+                  !pathname.startsWith("/super-admin") && "group-hover:scale-110"
+                )}
+              />
+              Manage Admins
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* Footer */}

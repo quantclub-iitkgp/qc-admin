@@ -1,10 +1,13 @@
 import { redirect } from "next/navigation"
-import { isAuthenticated } from "@/lib/session"
+import { getCurrentUser } from "@/lib/session"
 import { AdminShell } from "@/components/admin/admin-shell"
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const authenticated = await isAuthenticated()
-  if (!authenticated) redirect("/login")
+  const user = await getCurrentUser()
+  if (!user) redirect("/login")
 
-  return <AdminShell>{children}</AdminShell>
+  const isSuperAdmin =
+    !!process.env.SUPER_ADMIN_EMAIL && user.email === process.env.SUPER_ADMIN_EMAIL
+
+  return <AdminShell isSuperAdmin={isSuperAdmin}>{children}</AdminShell>
 }
