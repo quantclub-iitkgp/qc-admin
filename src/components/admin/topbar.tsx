@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button"
 
 interface TopbarProps {
   onMenuClick?: () => void
+  adminName: string
+  adminRole: string
 }
 
-export function Topbar({ onMenuClick }: TopbarProps) {
+export function Topbar({ onMenuClick, adminName, adminRole }: TopbarProps) {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
 
@@ -36,6 +38,12 @@ export function Topbar({ onMenuClick }: TopbarProps) {
 
       {/* Spacer on desktop (no hamburger) */}
       <div className="hidden md:block" />
+
+      {/* Admin info */}
+      <div className="flex flex-col items-end leading-tight">
+        <span className="text-sm font-heading text-foreground">{adminName}</span>
+        <span className="text-xs font-base text-foreground/60">{adminRole}</span>
+      </div>
 
       <div className="flex items-center gap-2">
         <Button
