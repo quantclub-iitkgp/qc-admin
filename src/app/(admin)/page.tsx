@@ -34,7 +34,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-heading mb-1">Dashboard</h2>
+        <h2 className="text-xl md:text-2xl font-heading mb-1">Dashboard</h2>
         <p className="text-sm text-foreground/60">Overview of all Quant Club content</p>
       </div>
 

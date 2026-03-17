@@ -11,7 +11,7 @@ export default async function BlogsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-heading">Blogs</h2>
           <p className="text-sm text-foreground/60">{blogs.length} posts</p>
@@ -24,7 +24,7 @@ export default async function BlogsPage() {
         </Button>
       </div>
 
-      <div className="border-2 border-border rounded-base overflow-hidden bg-secondary-background shadow-shadow">
+      <div className="border-2 border-border rounded-base overflow-hidden overflow-x-auto bg-secondary-background shadow-shadow">
         <Table>
           <TableHeader>
             <TableRow>

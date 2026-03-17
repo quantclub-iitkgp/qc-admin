@@ -13,7 +13,7 @@ export default async function ContactsPage() {
         <p className="text-sm text-foreground/60">{contacts.length} total submissions</p>
       </div>
 
-      <div className="border-2 border-border rounded-base overflow-hidden bg-secondary-background shadow-shadow">
+      <div className="border-2 border-border rounded-base overflow-hidden overflow-x-auto bg-secondary-background shadow-shadow">
         <Table>
           <TableHeader>
             <TableRow>

@@ -45,7 +45,7 @@ export default async function EditBlogPage({ params }: { params: Promise<{ slug:
               <Textarea id="description" name="description" defaultValue={blog.description} rows={2} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="author">Author</Label>
                 <Input id="author" name="author" defaultValue={blog.author} />
