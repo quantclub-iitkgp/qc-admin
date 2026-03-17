@@ -4,7 +4,12 @@ import { useState } from "react"
 import { Sidebar } from "@/components/admin/sidebar"
 import { Topbar } from "@/components/admin/topbar"
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+interface AdminShellProps {
+  children: React.ReactNode
+  isSuperAdmin: boolean
+}
+
+export function AdminShell({ children, isSuperAdmin }: AdminShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
@@ -18,7 +23,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         />
       )}
 
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        isSuperAdmin={isSuperAdmin}
+      />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden md:ml-64">
         <Topbar onMenuClick={() => setSidebarOpen((prev) => !prev)} />

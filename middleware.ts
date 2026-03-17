@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Public routes — no auth required
   if (pathname.startsWith("/login") || pathname.startsWith("/api/auth")) {
     return NextResponse.next()
   }
@@ -30,6 +31,14 @@ export async function middleware(request: NextRequest) {
 
   if (!user) {
     return NextResponse.redirect(new URL("/login", request.url))
+  }
+
+  // Only the super admin may access /super-admin
+  if (
+    pathname.startsWith("/super-admin") &&
+    (!process.env.SUPER_ADMIN_EMAIL || user.email !== process.env.SUPER_ADMIN_EMAIL)
+  ) {
+    return NextResponse.redirect(new URL("/", request.url))
   }
 
   return response
