@@ -35,7 +35,7 @@ export default async function EditTeamMemberPage({ params }: { params: Promise<{
         </CardHeader>
         <CardContent>
           <form action={action} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Name *</Label>
                 <Input id="name" name="name" defaultValue={member.name} required />
