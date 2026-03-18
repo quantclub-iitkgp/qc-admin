@@ -1,20 +1,22 @@
-import { BookOpen, CalendarDays, FileText, Users } from "lucide-react"
+import { BookOpen, CalendarDays, FileText, Users, ListOrdered } from "lucide-react"
 import {
   getBlogs,
   getWhitepapers,
   getEvents,
   getTeam,
+  getSoQWaitlist,
 } from "@/lib/data-store"
 import { StatCard } from "@/components/admin/stat-card"
 import { ContentChart } from "@/components/admin/content-chart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default async function DashboardPage() {
-  const [blogs, whitepapers, events, team] = await Promise.all([
+  const [blogs, whitepapers, events, team, waitlist] = await Promise.all([
     getBlogs(),
     getWhitepapers(),
     getEvents(),
     getTeam(),
+    getSoQWaitlist(),
   ])
 
   const chartData = [
@@ -36,6 +38,10 @@ export default async function DashboardPage() {
         <StatCard title="Whitepapers" value={whitepapers.length} icon={FileText} description="Research papers" />
         <StatCard title="Events" value={events.length} icon={CalendarDays} description="Past & upcoming" />
         <StatCard title="Team" value={team.length} icon={Users} description="Members" />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard title="SoQ Waitlist" value={waitlist.length} icon={ListOrdered} description="Signups for Summer of Quant" />
       </div>
 
       <div className="grid gap-6">
