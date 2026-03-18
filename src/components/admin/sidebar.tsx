@@ -10,6 +10,10 @@ import {
   Shield,
   Users,
   X,
+  Sun,
+  ListOrdered,
+  Layers,
+  UserCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -81,6 +85,36 @@ export function Sidebar({ isOpen = false, onClose, isSuperAdmin = false }: Sideb
                   !isActive && "group-hover:scale-110"
                 )}
               />
+              {label}
+            </Link>
+          )
+        })}
+
+        {/* Summer of Quant section */}
+        <div className="pt-4 pb-1">
+          <p className="px-3 pb-2 text-xs font-heading uppercase tracking-widest text-foreground/40">
+            Summer of Quant
+          </p>
+        </div>
+        {[
+          { href: "/soq/waitlist",    label: "Waitlist",        icon: ListOrdered },
+          { href: "/soq/phases",      label: "Phases & Topics", icon: Layers },
+          { href: "/soq/enrollments", label: "Enrollments",     icon: UserCheck },
+        ].map(({ href, label, icon: Icon }) => {
+          const isActive = pathname.startsWith(href)
+          return (
+            <Link
+              key={href}
+              href={href}
+              onClick={onClose}
+              className={cn(
+                "group flex items-center gap-3 px-3 py-2.5 rounded-base text-sm font-base transition-all border-2",
+                isActive
+                  ? "bg-main text-main-foreground border-border shadow-shadow translate-x-[2px] translate-y-[2px]"
+                  : "border-transparent text-foreground/70 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 hover:border-border"
+              )}
+            >
+              <Icon className={cn("h-4 w-4 shrink-0 transition-transform", !isActive && "group-hover:scale-110")} />
               {label}
             </Link>
           )
