@@ -46,15 +46,6 @@ export type TeamMember = {
   twitter: string | null
 }
 
-export type Contact = {
-  id: string
-  name: string
-  email: string
-  subject: string
-  message: string
-  receivedAt: string
-}
-
 // ---- Row mappers ----
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,18 +128,6 @@ function teamFromRow(row: any): TeamMember {
     github: row.github ?? null,
     linkedin: row.linkedin ?? null,
     twitter: row.twitter ?? null,
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function contactFromRow(row: any): Contact {
-  return {
-    id: row.id,
-    name: row.name,
-    email: row.email,
-    subject: row.subject,
-    message: row.message,
-    receivedAt: row.received_at,
   }
 }
 
@@ -265,20 +244,3 @@ export async function deleteTeamMember(id: number): Promise<void> {
   if (error) throw new Error(error.message)
 }
 
-// ---- Contacts ----
-
-export async function getContacts(): Promise<Contact[]> {
-  const { data, error } = await getServiceClient()
-    .from("contacts")
-    .select("*")
-    .order("received_at", { ascending: false })
-  if (error) throw new Error(error.message)
-  return (data ?? []).map(contactFromRow)
-}
-
-export async function addContact(
-  contact: Omit<Contact, "id" | "receivedAt">
-): Promise<void> {
-  const { error } = await getServiceClient().from("contacts").insert(contact)
-  if (error) throw new Error(error.message)
-}
