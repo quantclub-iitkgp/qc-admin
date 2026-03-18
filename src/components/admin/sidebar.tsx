@@ -7,7 +7,6 @@ import {
   BookOpen,
   CalendarDays,
   FileText,
-  Mail,
   Shield,
   Users,
   X,
@@ -20,7 +19,6 @@ const navLinks = [
   { href: "/whitepapers", label: "Whitepapers", icon: FileText },
   { href: "/events", label: "Events", icon: CalendarDays },
   { href: "/team", label: "Team", icon: Users },
-  { href: "/contacts", label: "Contacts", icon: Mail },
 ]
 
 interface SidebarProps {
