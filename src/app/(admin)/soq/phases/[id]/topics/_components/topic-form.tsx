@@ -38,6 +38,10 @@ export function TopicForm({ action, defaultValues, defaultContent, submitLabel }
                 <Label htmlFor="orderIndex">Order</Label>
                 <Input id="orderIndex" name="orderIndex" type="number" min={0} defaultValue={defaultValues?.orderIndex ?? 0} />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="readingTimeMinutes">Reading time (minutes)</Label>
+                <Input id="readingTimeMinutes" name="readingTimeMinutes" type="number" min={1} defaultValue={defaultValues?.readingTimeMinutes ?? 10} />
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <input id="isPublished" name="isPublished" type="checkbox" className="h-4 w-4 rounded border-2 border-border" defaultChecked={defaultValues?.isPublished ?? false} />

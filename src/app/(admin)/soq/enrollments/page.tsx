@@ -6,6 +6,7 @@ import { StatCard } from "@/components/admin/stat-card"
 import { UserCheck } from "lucide-react"
 import { EnrollForm } from "./_components/enroll-form"
 import { UnenrollButton } from "./_components/unenroll-button"
+import { BulkEnrollForm } from "./_components/bulk-enroll-form"
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-IN", {
@@ -43,6 +44,16 @@ export default async function EnrollmentsPage() {
         </CardHeader>
         <CardContent>
           <EnrollForm />
+        </CardContent>
+      </Card>
+
+      {/* Bulk enroll via CSV */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-heading text-base">Bulk Enroll via CSV</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BulkEnrollForm />
         </CardContent>
       </Card>
 

@@ -11,6 +11,7 @@ export async function createTopicAction(phaseId: number, formData: FormData) {
     title: String(formData.get("title")).trim(),
     description: String(formData.get("description") ?? "").trim() || undefined,
     orderIndex: Number(formData.get("orderIndex")) || 0,
+    readingTimeMinutes: Number(formData.get("readingTimeMinutes")) || 10,
     isPublished: formData.get("isPublished") === "on",
   })
   revalidatePath(`/soq/phases/${phaseId}/topics`)
@@ -23,6 +24,7 @@ export async function updateTopicAction(phaseId: number, topicId: number, formDa
     title: String(formData.get("title")).trim(),
     description: String(formData.get("description") ?? "").trim() || undefined,
     orderIndex: Number(formData.get("orderIndex")) || 0,
+    readingTimeMinutes: Number(formData.get("readingTimeMinutes")) || 10,
     isPublished: formData.get("isPublished") === "on",
   })
   const body = String(formData.get("body") ?? "").trim()
