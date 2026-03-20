@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import {
   BarChart3,
@@ -43,8 +44,14 @@ export function Sidebar({ isOpen = false, onClose, isSuperAdmin = false }: Sideb
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 h-16 border-b-4 border-border shrink-0">
-        <div className="flex h-8 w-8 items-center justify-center rounded-base border-2 border-border bg-main shadow-shadow shrink-0">
-          <span className="text-xs font-heading text-main-foreground leading-none">QC</span>
+        <div className="flex h-8 w-8 items-center justify-center rounded-base border-2 border-border bg-main shadow-shadow shrink-0 overflow-hidden">
+          <Image
+            src="/quant_club_iit_kharagpur_logo.jpg"
+            alt="Quant Club"
+            width={32}
+            height={32}
+            className="object-cover"
+          />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-heading leading-none truncate">Quant Club</p>
