@@ -12,6 +12,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Quant Club Admin",
   description: "CRM admin panel for Quant Club IIT KGP",
+  icons: { icon: "/quant_club_iit_kharagpur_logo.jpg" },
 }
 
 export default function RootLayout({
