@@ -2,7 +2,7 @@ import Link from "next/link"
 import { getSoQWaitlist, getSoQPhases, getSoQEnrollments } from "@/lib/data-store"
 import { StatCard } from "@/components/admin/stat-card"
 import { Button } from "@/components/ui/button"
-import { ListOrdered, Layers, UserCheck, ArrowRight } from "lucide-react"
+import { ListOrdered, Layers, UserCheck, BarChart3, ArrowRight } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default async function SoQOverviewPage() {
@@ -25,11 +25,12 @@ export default async function SoQOverviewPage() {
         <StatCard title="Enrolled" value={enrollments.length} icon={UserCheck} description="Active participants" />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { href: "/soq/waitlist",    label: "View Waitlist",    icon: ListOrdered, desc: "See everyone who signed up for notifications" },
           { href: "/soq/phases",      label: "Manage Phases",    icon: Layers,      desc: "Create and edit program phases and topics" },
           { href: "/soq/enrollments", label: "Enrollments",      icon: UserCheck,   desc: "Grant or revoke access to program content" },
+          { href: "/soq/analytics",   label: "Analytics",        icon: BarChart3,   desc: "View per-user completion and progress data" },
         ].map(({ href, label, icon: Icon, desc }) => (
           <Link key={href} href={href} className="block">
             <Card className="border-4 border-border shadow-shadow h-full cursor-pointer group transition-all hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none">

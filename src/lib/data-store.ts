@@ -355,6 +355,7 @@ export type SoQTopic = {
   title: string
   description?: string
   orderIndex: number
+  readingTimeMinutes: number
   isPublished: boolean
   createdAt: string
 }
@@ -368,6 +369,7 @@ function soqTopicFromRow(row: any): SoQTopic {
     title: row.title,
     description: row.description ?? undefined,
     orderIndex: row.order_index,
+    readingTimeMinutes: row.reading_time_minutes ?? 10,
     isPublished: row.is_published,
     createdAt: row.created_at,
   }
@@ -380,6 +382,7 @@ function soqTopicToRow(topic: Partial<SoQTopic>) {
     ...(topic.title !== undefined && { title: topic.title }),
     ...(topic.description !== undefined && { description: topic.description }),
     ...(topic.orderIndex !== undefined && { order_index: topic.orderIndex }),
+    ...(topic.readingTimeMinutes !== undefined && { reading_time_minutes: topic.readingTimeMinutes }),
     ...(topic.isPublished !== undefined && { is_published: topic.isPublished }),
   }
 }
@@ -497,4 +500,38 @@ export async function addSoQEnrollment(userId: string): Promise<void> {
 export async function removeSoQEnrollment(id: number): Promise<void> {
   const { error } = await getServiceClient().from("soq_enrollments").delete().eq("id", id)
   if (error) throw new Error(error.message)
+}
+
+// ---- SoQ Progress Analytics ----
+
+export type SoQProgressAnalyticsRow = {
+  userId: string
+  completedCount: number
+  lastActiveAt: string
+}
+
+export async function getSoQProgressAnalytics(): Promise<SoQProgressAnalyticsRow[]> {
+  const { data, error } = await getServiceClient()
+    .from("soq_progress")
+    .select("user_id, topic_id, created_at")
+  if (error) throw new Error(error.message)
+
+  // Group by user_id in JS since Supabase JS client doesn't support GROUP BY
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const byUser = new Map<string, { count: number; lastAt: string }>()
+  for (const row of (data ?? []) as any[]) {
+    const existing = byUser.get(row.user_id)
+    if (!existing) {
+      byUser.set(row.user_id, { count: 1, lastAt: row.created_at ?? new Date(0).toISOString() })
+    } else {
+      existing.count += 1
+      if (row.created_at && row.created_at > existing.lastAt) existing.lastAt = row.created_at
+    }
+  }
+
+  return Array.from(byUser.entries()).map(([userId, { count, lastAt }]) => ({
+    userId,
+    completedCount: count,
+    lastActiveAt: lastAt,
+  }))
 }
