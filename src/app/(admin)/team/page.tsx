@@ -4,6 +4,7 @@ import { getTeam } from "@/lib/data-store"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { DeleteTeamMemberButton } from "./delete-button"
+import { CsvUploadButton } from "./csv-upload-button"
 
 export default async function TeamPage() {
   const team = await getTeam()
@@ -15,12 +16,15 @@ export default async function TeamPage() {
           <h2 className="text-2xl font-heading">Team</h2>
           <p className="text-sm text-foreground/60">{team.length} members</p>
         </div>
-        <Button asChild>
-          <Link href="/team/new">
-            <Plus className="h-4 w-4" />
-            Add Member
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <CsvUploadButton />
+          <Button asChild>
+            <Link href="/team/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Member
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {team.length === 0 ? (
