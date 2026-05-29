@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -79,7 +80,7 @@ export default function NewWhitepaperPage() {
         </Card>
 
         <div className="flex gap-3">
-          <Button type="submit">Create Whitepaper</Button>
+          <SubmitButton pendingText="Uploading…">Create Whitepaper</SubmitButton>
           <Button type="button" variant="outline" asChild>
             <Link href="/whitepapers">Cancel</Link>
           </Button>

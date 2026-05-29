@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { getEvents } from "@/lib/data-store"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -66,7 +67,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
               <Input id="imageFile" name="imageFile" type="file" accept="image/*" />
             </div>
             <div className="flex gap-3 pt-2">
-              <Button type="submit">Save Changes</Button>
+              <SubmitButton pendingText="Saving…">Save Changes</SubmitButton>
               <Button type="button" variant="outline" asChild>
                 <Link href="/events">Cancel</Link>
               </Button>

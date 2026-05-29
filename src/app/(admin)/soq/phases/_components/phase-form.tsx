@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SoQPhase } from "@/lib/data-store"
 
@@ -45,7 +45,7 @@ export function PhaseForm({ action, defaultValues, submitLabel }: Props) {
             />
             <Label htmlFor="isPublished">Published (visible on frontend)</Label>
           </div>
-          <Button type="submit">{submitLabel}</Button>
+          <SubmitButton pendingText="Saving…">{submitLabel}</SubmitButton>
         </CardContent>
       </Card>
     </form>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { UserPlus } from "lucide-react"
+import { Loader2, UserPlus } from "lucide-react"
 import { enrollByEmailAction } from "../actions"
 
 export function EnrollForm() {
@@ -38,7 +38,11 @@ export function EnrollForm() {
         {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
       <Button type="submit" disabled={loading}>
-        <UserPlus className="h-4 w-4 mr-2" />
+        {loading ? (
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
+        ) : (
+          <UserPlus className="h-4 w-4 mr-2" />
+        )}
         {loading ? "Enrolling…" : "Enroll"}
       </Button>
     </form>
