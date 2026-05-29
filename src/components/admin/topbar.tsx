@@ -5,6 +5,7 @@ import { useTheme } from "next-themes"
 import { LogOut, Menu, Moon, Sun } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
 
 interface TopbarProps {
   onMenuClick?: () => void
@@ -15,6 +16,11 @@ interface TopbarProps {
 export function Topbar({ onMenuClick, adminName, adminRole }: TopbarProps) {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   async function handleLogout() {
     await fetch("/api/auth", { method: "DELETE" })
@@ -53,7 +59,7 @@ export function Topbar({ onMenuClick, adminName, adminRole }: TopbarProps) {
           aria-label="Toggle theme"
           className="text-foreground/60 hover:text-foreground"
         >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {mounted && theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
         <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
           <LogOut className="h-4 w-4" />
