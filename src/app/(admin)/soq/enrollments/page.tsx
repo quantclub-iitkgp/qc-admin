@@ -28,9 +28,12 @@ export default async function EnrollmentsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl md:text-2xl font-heading mb-1">Enrollments</h2>
-        <p className="text-sm text-foreground/60">Grant or revoke access to SoQ program content</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl md:text-2xl font-heading mb-1">Enrollments</h2>
+          <p className="text-sm text-foreground/60">Grant or revoke access to SoQ program content</p>
+        </div>
+        <BulkEnrollForm />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-4">
@@ -44,16 +47,6 @@ export default async function EnrollmentsPage() {
         </CardHeader>
         <CardContent>
           <EnrollForm />
-        </CardContent>
-      </Card>
-
-      {/* Bulk enroll via CSV */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-heading text-base">Bulk Enroll via CSV</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <BulkEnrollForm />
         </CardContent>
       </Card>
 
