@@ -78,27 +78,6 @@ export default function NewWhitepaperPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Content</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="content">
-                Full Paper Body{" "}
-                <span className="text-xs font-base text-foreground/50">(Markdown — used as fallback when no PDF)</span>
-              </Label>
-              <Textarea
-                id="content"
-                name="content"
-                placeholder={`## Abstract\n\nWrite the full whitepaper content here in Markdown...\n\n## 1. Introduction\n\n## 2. Methodology`}
-                rows={20}
-                className="font-mono text-sm"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
         <div className="flex gap-3">
           <Button type="submit">Create Whitepaper</Button>
           <Button type="button" variant="outline" asChild>

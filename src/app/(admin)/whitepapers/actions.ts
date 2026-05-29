@@ -42,7 +42,6 @@ async function uploadPDF(pdfFile: File, slug: string): Promise<string> {
 export async function createWhitepaperAction(formData: FormData) {
   const title = formData.get("title") as string
   const description = formData.get("description") as string
-  const content = formData.get("content") as string
   const publishedAt = formData.get("publishedAt") as string
   const pdfFile = formData.get("pdfFile") as File | null
   const coverImageFile = formData.get("coverImageFile") as File | null
@@ -63,7 +62,6 @@ export async function createWhitepaperAction(formData: FormData) {
     slug,
     imageUrl,
     description: description || undefined,
-    content: content || undefined,
     publishedAt: publishedAt || new Date().toISOString().split("T")[0],
     pdfUrl,
   })
@@ -75,7 +73,6 @@ export async function createWhitepaperAction(formData: FormData) {
 export async function updateWhitepaperAction(id: number, formData: FormData) {
   const title = formData.get("title") as string
   const description = formData.get("description") as string
-  const content = formData.get("content") as string
   const publishedAt = formData.get("publishedAt") as string
   const pdfFile = formData.get("pdfFile") as File | null
   const coverImageFile = formData.get("coverImageFile") as File | null
@@ -97,7 +94,6 @@ export async function updateWhitepaperAction(id: number, formData: FormData) {
     slug,
     imageUrl,
     description: description || undefined,
-    content: content || undefined,
     publishedAt: publishedAt || undefined,
     ...(pdfUrl ? { pdfUrl } : {}),
   })
