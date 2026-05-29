@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { MarkdownEditor } from "@/components/ui/markdown-editor"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SoQTopic, SoQContent } from "@/lib/data-store"
@@ -55,13 +56,12 @@ export function TopicForm({ action, defaultValues, defaultContent, submitLabel }
             <CardTitle className="font-heading">Content <span className="text-foreground/40 text-sm font-base">(Markdown)</span></CardTitle>
           </CardHeader>
           <CardContent>
-            <Textarea
+            <MarkdownEditor
               id="body"
               name="body"
               rows={20}
-              placeholder="Write topic content in Markdown…&#10;&#10;## Overview&#10;&#10;This section covers..."
+              placeholder={`Write topic content in Markdown…\n\n## Overview\n\nThis section covers...`}
               defaultValue={defaultContent?.body ?? ""}
-              className="font-mono text-sm resize-y"
             />
             <p className="text-xs text-foreground/40 mt-2">Supports GitHub-flavored Markdown. Content is only visible to enrolled users.</p>
           </CardContent>
