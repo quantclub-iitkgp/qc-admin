@@ -103,28 +103,6 @@ export default async function EditWhitepaperPage({ params }: { params: Promise<{
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Content</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="content">
-                Full Paper Body{" "}
-                <span className="text-xs font-base text-foreground/50">(Markdown — used as fallback when no PDF)</span>
-              </Label>
-              <Textarea
-                id="content"
-                name="content"
-                defaultValue={wp.content}
-                placeholder={`## Abstract\n\nWrite the full whitepaper content here in Markdown...`}
-                rows={20}
-                className="font-mono text-sm"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
         <div className="flex gap-3">
           <Button type="submit">Save Changes</Button>
           <Button type="button" variant="outline" asChild>
