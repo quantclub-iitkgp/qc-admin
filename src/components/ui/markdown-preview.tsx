@@ -2,6 +2,8 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeSlug from "rehype-slug"
 
+import { markdownComponents } from "@/components/ui/markdown-components"
+
 /**
  * Renders Markdown the same way the public SoQ frontend does (react-markdown +
  * remark-gfm + rehype-slug, with the identical `prose` neobrutalism classes),
@@ -39,7 +41,7 @@ export function MarkdownPreview({ body }: { body: string }) {
         "prose-strong:font-heading",
       ].join(" ")}
     >
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]} components={markdownComponents}>
         {body}
       </ReactMarkdown>
     </div>
