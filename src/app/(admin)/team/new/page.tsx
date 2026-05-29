@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -52,7 +53,7 @@ export default function NewTeamMemberPage() {
               </div>
             </div>
             <div className="flex gap-3 pt-2">
-              <Button type="submit">Add Member</Button>
+              <SubmitButton pendingText="Adding…">Add Member</SubmitButton>
               <Button type="button" variant="outline" asChild>
                 <Link href="/team">Cancel</Link>
               </Button>

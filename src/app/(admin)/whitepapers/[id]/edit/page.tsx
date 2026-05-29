@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { getWhitepapers } from "@/lib/data-store"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -104,7 +105,7 @@ export default async function EditWhitepaperPage({ params }: { params: Promise<{
         </Card>
 
         <div className="flex gap-3">
-          <Button type="submit">Save Changes</Button>
+          <SubmitButton pendingText="Uploading…">Save Changes</SubmitButton>
           <Button type="button" variant="outline" asChild>
             <Link href="/whitepapers">Cancel</Link>
           </Button>

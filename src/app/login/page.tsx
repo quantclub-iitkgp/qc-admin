@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Lock, UserPlus } from "lucide-react"
+import { Loader2, Lock, UserPlus } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -160,6 +160,7 @@ export default function LoginPage() {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loginLoading}>
+                {loginLoading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
                 {loginLoading ? "Signing in…" : "Sign In"}
               </Button>
             </form>
@@ -203,6 +204,7 @@ export default function LoginPage() {
                 Sign up is by invitation only. Your email must be added by the Super Admin before you can create an account.
               </p>
               <Button type="submit" className="w-full" disabled={signupLoading}>
+                {signupLoading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
                 {signupLoading ? "Creating account…" : "Create Account"}
               </Button>
             </form>

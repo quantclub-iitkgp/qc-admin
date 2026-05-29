@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { inviteAdminAction } from "./actions"
@@ -35,7 +35,7 @@ export function InviteForm() {
           The invited person can sign up using this email on the login page.
         </p>
       </div>
-      <Button type="submit">Add Invitation</Button>
+      <SubmitButton pendingText="Adding…">Add Invitation</SubmitButton>
     </form>
   )
 }
