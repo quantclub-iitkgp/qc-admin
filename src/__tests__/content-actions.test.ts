@@ -12,6 +12,24 @@ const mockDeleteEvent = vi.fn()
 const mockAddTeamMember = vi.fn()
 const mockUpdateTeamMember = vi.fn()
 const mockDeleteTeamMember = vi.fn()
+const mockGetUser = vi.fn()
+const mockCreateSignedUploadUrl = vi.fn()
+const mockGetPublicUrl = vi.fn()
+
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: async () => ({ auth: { getUser: () => mockGetUser() } }),
+}))
+
+vi.mock("@/lib/supabase/service", () => ({
+  getServiceClient: () => ({
+    storage: {
+      from: () => ({
+        createSignedUploadUrl: (...args: unknown[]) => mockCreateSignedUploadUrl(...args),
+        getPublicUrl: (...args: unknown[]) => mockGetPublicUrl(...args),
+      }),
+    },
+  }),
+}))
 
 vi.mock("@/lib/data-store", () => ({
   addWhitepaper: (...args: unknown[]) => mockAddWhitepaper(...args),
@@ -28,6 +46,7 @@ vi.mock("@/lib/data-store", () => ({
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import {
+  createWhitepaperUploadUrl,
   createWhitepaperAction,
   updateWhitepaperAction,
   deleteWhitepaperAction,
@@ -53,33 +72,93 @@ beforeEach(() => vi.clearAllMocks())
 
 // ---- Whitepapers ----
 
+describe("createWhitepaperUploadUrl", () => {
+  it("returns a signed upload target for a PDF (whitepapers bucket)", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "u1" } } })
+    mockCreateSignedUploadUrl.mockResolvedValue({
+      data: { signedUrl: "https://s/upload", token: "tok", path: "black-scholes-model.pdf" },
+      error: null,
+    })
+    mockGetPublicUrl.mockReturnValue({ data: { publicUrl: "https://pub/black-scholes-model.pdf" } })
+
+    const res = await createWhitepaperUploadUrl("Black Scholes Model", "pdf", "pdf")
+
+    expect(mockCreateSignedUploadUrl).toHaveBeenCalledWith("black-scholes-model.pdf", { upsert: true })
+    expect(res.data).toEqual({
+      bucket: "whitepapers",
+      path: "black-scholes-model.pdf",
+      token: "tok",
+      publicUrl: "https://pub/black-scholes-model.pdf",
+    })
+  })
+
+  it("derives a covers/ path for a cover image", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "u1" } } })
+    mockCreateSignedUploadUrl.mockResolvedValue({
+      data: { signedUrl: "https://s/upload", token: "tok", path: "whitepapers/black-scholes-model.png" },
+      error: null,
+    })
+    mockGetPublicUrl.mockReturnValue({ data: { publicUrl: "https://pub/cover.png" } })
+
+    const res = await createWhitepaperUploadUrl("Black Scholes Model", "cover", "png")
+
+    expect(mockCreateSignedUploadUrl).toHaveBeenCalledWith("whitepapers/black-scholes-model.png", { upsert: true })
+    expect(res.data?.bucket).toBe("covers")
+  })
+
+  it("rejects when not authenticated", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } })
+    const res = await createWhitepaperUploadUrl("Anything", "pdf", "pdf")
+    expect(res.error).toBeTruthy()
+    expect(mockCreateSignedUploadUrl).not.toHaveBeenCalled()
+  })
+})
+
 describe("createWhitepaperAction", () => {
   it("calls addWhitepaper with slug derived from title", async () => {
-    await createWhitepaperAction(fd({ title: "Black Scholes Model", imageUrl: "/img.webp" }))
+    const result = await createWhitepaperAction({
+      title: "Black Scholes Model",
+      imageUrl: "/img.webp",
+      pdfUrl: "https://pub/black-scholes-model.pdf",
+      publishedAt: "2026-01-01",
+    })
 
     expect(mockAddWhitepaper).toHaveBeenCalledOnce()
     const arg = mockAddWhitepaper.mock.calls[0][0]
     expect(arg.title).toBe("Black Scholes Model")
     expect(arg.slug).toBe("black-scholes-model")
     expect(arg.imageUrl).toBe("/img.webp")
+    expect(arg.pdfUrl).toBe("https://pub/black-scholes-model.pdf")
     expect(revalidatePath).toHaveBeenCalledWith("/whitepapers")
-    expect(redirect).toHaveBeenCalledWith("/whitepapers")
+    expect(result).toEqual({})
   })
 
   it("uses default imageUrl when empty", async () => {
-    await createWhitepaperAction(fd({ title: "Test Paper", imageUrl: "" }))
+    await createWhitepaperAction({ title: "Test Paper", imageUrl: "" })
     expect(mockAddWhitepaper.mock.calls[0][0].imageUrl).toBe("/template-previews/blog.webp")
+  })
+
+  it("returns error when addWhitepaper throws", async () => {
+    mockAddWhitepaper.mockRejectedValueOnce(new Error("db down"))
+    const result = await createWhitepaperAction({ title: "Boom" })
+    expect(result).toEqual({ error: "db down" })
   })
 })
 
 describe("updateWhitepaperAction", () => {
   it("calls updateWhitepaper with correct id and fields", async () => {
-    await updateWhitepaperAction(5, fd({ title: "New Title", imageUrl: "/new.webp" }))
+    const result = await updateWhitepaperAction(5, { title: "New Title", imageUrl: "/new.webp" })
 
     expect(mockUpdateWhitepaper).toHaveBeenCalledOnce()
     expect(mockUpdateWhitepaper.mock.calls[0][0]).toBe(5)
     expect(mockUpdateWhitepaper.mock.calls[0][1].title).toBe("New Title")
-    expect(redirect).toHaveBeenCalledWith("/whitepapers")
+    expect(revalidatePath).toHaveBeenCalledWith("/whitepapers")
+    expect(result).toEqual({})
+  })
+
+  it("omits pdfUrl when not provided (keeps existing)", async () => {
+    await updateWhitepaperAction(7, { title: "No PDF Change", imageUrl: "/x.webp" })
+    expect("pdfUrl" in mockUpdateWhitepaper.mock.calls[0][1]).toBe(false)
   })
 })
 
