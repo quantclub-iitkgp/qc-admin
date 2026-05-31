@@ -1,14 +1,56 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-// Mock fs *before* importing data-store so the module picks up the mock
-vi.mock("fs", () => ({
-  promises: {
-    readFile: vi.fn(),
-    writeFile: vi.fn(),
-  },
+// data-store talks to Supabase via getServiceClient(). We mock it with a
+// chainable query builder that records every call and resolves to a
+// configurable { data, error }. Supabase's builder is thenable, so awaiting it
+// (or its terminal .single()) yields the result — we model that with `then`.
+
+type DbResult = { data: unknown; error: unknown }
+
+let nextResult: DbResult = { data: null, error: null }
+let calls: Array<{ table: string; method: string; args: unknown[] }> = []
+
+interface MockBuilder {
+  select: (...args: unknown[]) => MockBuilder
+  insert: (...args: unknown[]) => MockBuilder
+  update: (...args: unknown[]) => MockBuilder
+  delete: (...args: unknown[]) => MockBuilder
+  upsert: (...args: unknown[]) => MockBuilder
+  eq: (...args: unknown[]) => MockBuilder
+  order: (...args: unknown[]) => MockBuilder
+  single: (...args: unknown[]) => MockBuilder
+  then: (
+    onFulfilled: (r: DbResult) => unknown,
+    onRejected?: (e: unknown) => unknown
+  ) => Promise<unknown>
+}
+
+function makeBuilder(table: string): MockBuilder {
+  let builder: MockBuilder
+  const record =
+    (method: string) =>
+    (...args: unknown[]): MockBuilder => {
+      calls.push({ table, method, args })
+      return builder
+    }
+  builder = {
+    select: record("select"),
+    insert: record("insert"),
+    update: record("update"),
+    delete: record("delete"),
+    upsert: record("upsert"),
+    eq: record("eq"),
+    order: record("order"),
+    single: record("single"),
+    then: (onFulfilled, onRejected) => Promise.resolve(nextResult).then(onFulfilled, onRejected),
+  }
+  return builder
+}
+
+vi.mock("@/lib/supabase/service", () => ({
+  getServiceClient: () => ({ from: (table: string) => makeBuilder(table) }),
 }))
 
-import { promises as fs } from "fs"
 import {
   getBlogs,
   addBlog,
@@ -26,284 +68,232 @@ import {
   addTeamMember,
   updateTeamMember,
   deleteTeamMember,
-  getContacts,
-  addContact,
-  type Blog,
-  type Whitepaper,
-  type Event,
-  type TeamMember,
-  type Contact,
 } from "@/lib/data-store"
 
-const mockRead = vi.mocked(fs.readFile)
-const mockWrite = vi.mocked(fs.writeFile)
-
-function setupRead(data: unknown) {
-  mockRead.mockResolvedValue(JSON.stringify(data) as unknown as Buffer)
+function find(table: string, method: string) {
+  return calls.find((c) => c.table === table && c.method === method)
 }
 
 beforeEach(() => {
-  vi.clearAllMocks()
-  mockWrite.mockResolvedValue(undefined)
+  calls = []
+  nextResult = { data: null, error: null }
 })
 
 // ---- Blogs ----
 
-const sampleBlog: Blog = {
-  slug: "/blogs/test-blog",
-  slugAsParams: "test-blog",
-  title: "Test Blog",
-  description: "A test",
-  date: "2025-01-01",
-  author: "Author",
-  tags: ["test"],
-}
+describe("blogs", () => {
+  it("getBlogs maps snake_case rows to camelCase and orders by created_at desc", async () => {
+    nextResult = {
+      data: [
+        {
+          slug: "intro",
+          slug_as_params: "intro",
+          title: "Intro",
+          description: "d",
+          date: "2026-01-01",
+          cover_image: "/c.png",
+          author: "A",
+          read_time: "5 min",
+          tags: ["x"],
+          content: "body",
+        },
+      ],
+      error: null,
+    }
 
-describe("getBlogs", () => {
-  it("returns parsed blog array", async () => {
-    setupRead([sampleBlog])
-    const result = await getBlogs()
-    expect(result).toEqual([sampleBlog])
-    expect(mockRead).toHaveBeenCalledOnce()
-  })
-})
+    const res = await getBlogs()
 
-describe("addBlog", () => {
-  it("prepends new blog and writes file", async () => {
-    const existing: Blog[] = [sampleBlog]
-    setupRead(existing)
-
-    const newBlog: Blog = { ...sampleBlog, slugAsParams: "new-blog", title: "New Blog" }
-    await addBlog(newBlog)
-
-    expect(mockWrite).toHaveBeenCalledOnce()
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Blog[]
-    expect(written[0]).toEqual(newBlog)
-    expect(written[1]).toEqual(sampleBlog)
-  })
-})
-
-describe("updateBlog", () => {
-  it("updates matching blog by slugAsParams", async () => {
-    setupRead([sampleBlog])
-    await updateBlog("test-blog", { title: "Updated Title" })
-
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Blog[]
-    expect(written[0].title).toBe("Updated Title")
+    expect(res).toEqual([
+      {
+        slug: "intro",
+        slugAsParams: "intro",
+        title: "Intro",
+        description: "d",
+        date: "2026-01-01",
+        coverImage: "/c.png",
+        author: "A",
+        readTime: "5 min",
+        tags: ["x"],
+        content: "body",
+      },
+    ])
+    expect(find("blogs", "order")?.args).toEqual(["created_at", { ascending: false }])
   })
 
-  it("throws if blog not found", async () => {
-    setupRead([sampleBlog])
-    await expect(updateBlog("nonexistent", { title: "x" })).rejects.toThrow("Blog not found: nonexistent")
-  })
-})
-
-describe("deleteBlog", () => {
-  it("removes blog with matching slugAsParams", async () => {
-    const extra: Blog = { ...sampleBlog, slugAsParams: "other-blog" }
-    setupRead([sampleBlog, extra])
-
-    await deleteBlog("test-blog")
-
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Blog[]
-    expect(written).toHaveLength(1)
-    expect(written[0].slugAsParams).toBe("other-blog")
+  it("addBlog inserts a snake_case row", async () => {
+    await addBlog({ slug: "p", slugAsParams: "p", title: "P", coverImage: "/p.png", readTime: "3 min" })
+    expect(find("blogs", "insert")?.args[0]).toEqual({
+      slug: "p",
+      slug_as_params: "p",
+      title: "P",
+      cover_image: "/p.png",
+      read_time: "3 min",
+    })
   })
 
-  it("writes unchanged array if slug not found", async () => {
-    setupRead([sampleBlog])
-    await deleteBlog("ghost")
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Blog[]
-    expect(written).toHaveLength(1)
+  it("updateBlog updates by slug_as_params", async () => {
+    await updateBlog("p", { title: "New" })
+    expect(find("blogs", "update")?.args[0]).toEqual({ title: "New" })
+    expect(find("blogs", "eq")?.args).toEqual(["slug_as_params", "p"])
+  })
+
+  it("deleteBlog deletes by slug_as_params", async () => {
+    await deleteBlog("p")
+    expect(find("blogs", "delete")).toBeDefined()
+    expect(find("blogs", "eq")?.args).toEqual(["slug_as_params", "p"])
   })
 })
 
 // ---- Whitepapers ----
 
-const sampleWp: Whitepaper = { id: 1, title: "WP One", slug: "wp-one", imageUrl: "/img.webp" }
+describe("whitepapers", () => {
+  it("getWhitepapers maps image_url / published_at / pdf_url", async () => {
+    nextResult = {
+      data: [
+        {
+          id: 1,
+          title: "T",
+          slug: "t",
+          image_url: "/i.png",
+          description: null,
+          content: null,
+          published_at: "2026-01-01",
+          pdf_url: null,
+        },
+      ],
+      error: null,
+    }
 
-describe("getWhitepapers", () => {
-  it("returns parsed whitepaper array", async () => {
-    setupRead([sampleWp])
-    expect(await getWhitepapers()).toEqual([sampleWp])
+    const res = await getWhitepapers()
+
+    expect(res).toEqual([
+      {
+        id: 1,
+        title: "T",
+        slug: "t",
+        imageUrl: "/i.png",
+        description: undefined,
+        content: undefined,
+        publishedAt: "2026-01-01",
+        pdfUrl: undefined,
+      },
+    ])
   })
-})
 
-describe("addWhitepaper", () => {
-  it("assigns max id + 1 and prepends", async () => {
-    setupRead([sampleWp])
-    await addWhitepaper({ title: "WP Two", slug: "wp-two", imageUrl: "/img2.webp" })
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Whitepaper[]
-    expect(written[0].id).toBe(2)
-    expect(written[0].title).toBe("WP Two")
+  it("addWhitepaper inserts mapped columns", async () => {
+    await addWhitepaper({
+      title: "T",
+      slug: "t",
+      imageUrl: "/i.png",
+      publishedAt: "2026-01-01",
+      pdfUrl: "/p.pdf",
+    })
+    expect(find("whitepapers", "insert")?.args[0]).toEqual({
+      title: "T",
+      slug: "t",
+      image_url: "/i.png",
+      published_at: "2026-01-01",
+      pdf_url: "/p.pdf",
+    })
   })
 
-  it("assigns id 1 when list is empty", async () => {
-    setupRead([])
-    await addWhitepaper({ title: "First", slug: "first", imageUrl: "/img.webp" })
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Whitepaper[]
-    expect(written[0].id).toBe(1)
-  })
-})
-
-describe("updateWhitepaper", () => {
-  it("updates matching whitepaper by id", async () => {
-    setupRead([sampleWp])
-    await updateWhitepaper(1, { title: "Updated" })
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Whitepaper[]
-    expect(written[0].title).toBe("Updated")
+  it("updateWhitepaper updates by id", async () => {
+    await updateWhitepaper(5, { title: "New", pdfUrl: "/new.pdf" })
+    expect(find("whitepapers", "update")?.args[0]).toEqual({ title: "New", pdf_url: "/new.pdf" })
+    expect(find("whitepapers", "eq")?.args).toEqual(["id", 5])
   })
 
-  it("throws if id not found", async () => {
-    setupRead([sampleWp])
-    await expect(updateWhitepaper(99, { title: "x" })).rejects.toThrow("Whitepaper not found: 99")
+  it("deleteWhitepaper deletes by id", async () => {
+    await deleteWhitepaper(9)
+    expect(find("whitepapers", "delete")).toBeDefined()
+    expect(find("whitepapers", "eq")?.args).toEqual(["id", 9])
   })
-})
 
-describe("deleteWhitepaper", () => {
-  it("removes whitepaper with matching id", async () => {
-    const wp2: Whitepaper = { id: 2, title: "WP Two", slug: "wp-two", imageUrl: "/img.webp" }
-    setupRead([sampleWp, wp2])
-    await deleteWhitepaper(1)
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Whitepaper[]
-    expect(written).toHaveLength(1)
-    expect(written[0].id).toBe(2)
+  it("propagates the Supabase error", async () => {
+    nextResult = { data: null, error: { message: "db down" } }
+    await expect(
+      addWhitepaper({ title: "X", slug: "x", imageUrl: "/x.png", publishedAt: "2026-01-01" })
+    ).rejects.toThrow("db down")
   })
 })
 
 // ---- Events ----
 
-const sampleEvent: Event = {
-  id: 1,
-  title: "Test Event",
-  description: "Desc",
-  date: "2025-03-01",
-  image: "https://img.jpg",
-  link: "/events/test",
-}
-
-describe("getEvents", () => {
-  it("returns parsed events array", async () => {
-    setupRead([sampleEvent])
-    expect(await getEvents()).toEqual([sampleEvent])
-  })
-})
-
-describe("addEvent", () => {
-  it("assigns next id and prepends event", async () => {
-    setupRead([sampleEvent])
-    await addEvent({ title: "New", description: "D", date: "2025-04-01", image: "", link: "" })
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Event[]
-    expect(written[0].id).toBe(2)
-    expect(written[0].title).toBe("New")
-  })
-})
-
-describe("updateEvent", () => {
-  it("updates matching event", async () => {
-    setupRead([sampleEvent])
-    await updateEvent(1, { title: "Updated Event" })
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Event[]
-    expect(written[0].title).toBe("Updated Event")
+describe("events", () => {
+  it("getEvents maps rows and orders by created_at desc", async () => {
+    nextResult = {
+      data: [{ id: 2, title: "E", description: "d", date: "2026-02-02", image: "/e.png", link: "/l" }],
+      error: null,
+    }
+    const res = await getEvents()
+    expect(res).toEqual([
+      { id: 2, title: "E", description: "d", date: "2026-02-02", image: "/e.png", link: "/l" },
+    ])
+    expect(find("events", "order")?.args).toEqual(["created_at", { ascending: false }])
   })
 
-  it("throws if event not found", async () => {
-    setupRead([sampleEvent])
-    await expect(updateEvent(99, { title: "x" })).rejects.toThrow("Event not found: 99")
+  it("addEvent inserts the row as-is", async () => {
+    await addEvent({ title: "E", description: "d", date: "2026-02-02", image: "/e.png", link: "/l" })
+    expect(find("events", "insert")?.args[0]).toEqual({
+      title: "E",
+      description: "d",
+      date: "2026-02-02",
+      image: "/e.png",
+      link: "/l",
+    })
   })
-})
 
-describe("deleteEvent", () => {
-  it("removes event with matching id", async () => {
-    setupRead([sampleEvent])
-    await deleteEvent(1)
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Event[]
-    expect(written).toHaveLength(0)
+  it("updateEvent updates by id", async () => {
+    await updateEvent(3, { title: "Renamed" })
+    expect(find("events", "update")?.args[0]).toEqual({ title: "Renamed" })
+    expect(find("events", "eq")?.args).toEqual(["id", 3])
+  })
+
+  it("deleteEvent deletes by id", async () => {
+    await deleteEvent(3)
+    expect(find("events", "delete")).toBeDefined()
+    expect(find("events", "eq")?.args).toEqual(["id", 3])
   })
 })
 
 // ---- Team ----
 
-const sampleMember: TeamMember = {
-  id: 1,
-  name: "Alice",
-  role: "Dev",
-  bio: "Bio",
-  image: "/team/alice.jpg",
-  github: null,
-  linkedin: null,
-  twitter: null,
-}
-
-describe("getTeam", () => {
-  it("returns parsed team array", async () => {
-    setupRead([sampleMember])
-    expect(await getTeam()).toEqual([sampleMember])
-  })
-})
-
-describe("addTeamMember", () => {
-  it("assigns next id and prepends member", async () => {
-    setupRead([sampleMember])
-    await addTeamMember({ name: "Bob", role: "PM", bio: "", image: "", github: null, linkedin: null, twitter: null })
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as TeamMember[]
-    expect(written[0].id).toBe(2)
-    expect(written[0].name).toBe("Bob")
-  })
-})
-
-describe("updateTeamMember", () => {
-  it("updates matching member", async () => {
-    setupRead([sampleMember])
-    await updateTeamMember(1, { role: "Lead Dev" })
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as TeamMember[]
-    expect(written[0].role).toBe("Lead Dev")
+describe("team", () => {
+  it("getTeam maps rows and coalesces missing social fields to null", async () => {
+    nextResult = {
+      data: [
+        { id: 4, name: "N", role: "R", image: "/n.png", bio: "b", github: null, twitter: "@n" },
+      ],
+      error: null,
+    }
+    const res = await getTeam()
+    expect(res).toEqual([
+      { id: 4, name: "N", role: "R", image: "/n.png", bio: "b", github: null, linkedin: null, twitter: "@n" },
+    ])
   })
 
-  it("throws if member not found", async () => {
-    setupRead([sampleMember])
-    await expect(updateTeamMember(99, { name: "x" })).rejects.toThrow("Team member not found: 99")
+  it("addTeamMember inserts the row as-is", async () => {
+    await addTeamMember({
+      name: "N",
+      role: "R",
+      image: "/n.png",
+      bio: "b",
+      github: null,
+      linkedin: null,
+      twitter: null,
+    })
+    expect(find("team", "insert")?.args[0]).toMatchObject({ name: "N", role: "R" })
   })
-})
 
-describe("deleteTeamMember", () => {
-  it("removes member with matching id", async () => {
-    setupRead([sampleMember])
-    await deleteTeamMember(1)
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as TeamMember[]
-    expect(written).toHaveLength(0)
+  it("updateTeamMember updates by id", async () => {
+    await updateTeamMember(7, { role: "Lead" })
+    expect(find("team", "update")?.args[0]).toEqual({ role: "Lead" })
+    expect(find("team", "eq")?.args).toEqual(["id", 7])
   })
-})
 
-// ---- Contacts ----
-
-const sampleContact: Contact = {
-  id: "abc-123",
-  name: "Jane",
-  email: "jane@example.com",
-  subject: "Hello",
-  message: "Hi there",
-  receivedAt: "2025-01-01T00:00:00.000Z",
-}
-
-describe("getContacts", () => {
-  it("returns parsed contacts array", async () => {
-    setupRead([sampleContact])
-    expect(await getContacts()).toEqual([sampleContact])
-  })
-})
-
-describe("addContact", () => {
-  it("generates id and receivedAt, then prepends", async () => {
-    setupRead([sampleContact])
-    await addContact({ name: "Bob", email: "bob@x.com", subject: "Q", message: "Hey" })
-    const written = JSON.parse(mockWrite.mock.calls[0][1] as string) as Contact[]
-    expect(written).toHaveLength(2)
-    expect(written[0].name).toBe("Bob")
-    expect(typeof written[0].id).toBe("string")
-    expect(written[0].id).not.toBe("")
-    expect(written[0].receivedAt).toBeTruthy()
-    // Original contact preserved
-    expect(written[1]).toEqual(sampleContact)
+  it("deleteTeamMember deletes by id", async () => {
+    await deleteTeamMember(7)
+    expect(find("team", "delete")).toBeDefined()
+    expect(find("team", "eq")?.args).toEqual(["id", 7])
   })
 })
