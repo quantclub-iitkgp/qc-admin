@@ -31,6 +31,10 @@ Always use these conventions for interactive elements:
 - JSON files are at `data/blogs.json`, `data/whitepapers.json`, `data/events.json`, `data/team.json`, `data/contacts.json`
 - Contacts are append-only (no delete/edit)
 
+## Storage
+- Buckets `covers` (images) and `whitepapers` (PDFs), provisioned by `supabase-storage-buckets.sql` (idempotent — run in the Supabase SQL editor).
+- Large files (e.g. whitepaper PDFs) upload **browser → Supabase Storage directly** via a server-issued signed upload URL (`createWhitepaperUploadUrl` in `src/app/(admin)/whitepapers/actions.ts`). Files never pass through a Server Action, so the upload is not bound by the 1 MB Server Action body limit or Vercel's 4.5 MB cap — only the resulting public URLs + metadata go to the action.
+
 ## Server Actions Pattern
 ```ts
 "use server"
